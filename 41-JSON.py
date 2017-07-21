@@ -37,14 +37,21 @@ print(json.loads(json_str))
 
 
 
+# renbin.guo    added 
+#将类类型与json类型互转。
+# 都要通过中间人    class<-->dict<--->json
+
 import json
 
+
+# 定义student类 grb
 class Student(object):
 	def __init__(self, name, age, score):
 		self.name = name
 		self.age = age
 		self.score = score
 
+#定义函数将student类转为dict类型 grb
 def student2dict(std):
 	return{
 		'name':std.name,
@@ -57,10 +64,23 @@ s = Student('Bob',20,88)
 print(json.dumps(s, default=student2dict))
 
 
+#grb  add 2017-07-21  将json转为class类型
+
 # 要把JSON反序列化为一个Student对象实例，loads()方法首先转换出一个dict对象，然后，我们传入的object_hook函数负责把dict转换为Student实例：
 
+#grb 定义函数，见dict转为class
 def dict2student(d):
 	return Student(d['name'],d['age'],d['score'])
 
 json_str='{"age": 20, "score": 88, "name": "Bob"}'
 print(json.loads(json_str,object_hook=dict2student))
+
+
+#grb  add 2017-07-21  如果类遍了，那上面的student2dict就无法了 
+#不过，下次如果遇到一个Teacher类的实例，照样无法序列化为JSON。我们可以偷个懒，把任意class的实例变为dict：
+
+print(json.dumps(s, default=lambda obj: obj.__dict__))
+
+
+
+
