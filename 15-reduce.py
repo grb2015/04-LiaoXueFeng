@@ -5,6 +5,8 @@ reduce(f, [x1, x2, x3, x4]) = f(f(f(x1, x2), x3), x4)
 '''
 from functools import reduce
 
+
+## 1-- 求1+3+5+7+9
 def add(x,y):
 	return x + y
 
@@ -12,16 +14,22 @@ print(reduce(add, [1,3,5,7,9]))
 print(sum([1,3,5,7,9]))
 
 
+
+## 2-- 将[1,3,5,7,9]转为数字13579
+## 需要注意的是，这里的List里面是数值类型，而不是['1','3','5','7','9']即'13579'
 def fn(x,y):
 	return x * 10 + y
 
 print(reduce(fn, [1,3,5,6,7]))
 
-def char2num(s):
-	return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
 
-print(list(map(char2num,'13579')))
-print(reduce(fn,map(char2num,'13579')))
+# 3--- 将字符串‘13579' 转为数值13579 由于字符串也是一个序列，
+def char2num(s):
+	return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]  ##这里传入的s就是'4'之类的key
+
+print(list(map(char2num,'13579')))      ## 将'13579' 即['1','3,'5','7','9']转为了[1,3,5,7,9]
+
+print(reduce(fn,map(char2num,'13579'))) ## print(reduce(fn, [1,3,5,6,7]))
 
 
 # 整理成一个str2int的函数就是：
@@ -41,7 +49,7 @@ def char2num(s):
 	return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
 
 def str2int(s):
-	return reduce(lambda x,y : x * 10 + y, map(char2num,s))
+	return reduce(lambda x,y : x * 10 + y, map(char2num,s)) ## reduce(lambda x,y : x * 10 + y,[1,3,5,7,9]) 
 
 print(str2int('2122323'))
 
