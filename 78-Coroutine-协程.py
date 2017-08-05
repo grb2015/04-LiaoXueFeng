@@ -16,26 +16,33 @@ Python对协程的支持是通过generator实现的。
 
 但是Python的yield不但可以返回一个值，它还可以接收调用者发出的参数。
 '''
+
+## 协程实现生产者-消费者的问题 .协程是通过生成器来实现的(生成器作参数)
+
+
 def consumer():
     r = ''
     while True:
         n = yield r
-        if not n:
+        if not n:           ##这里是说，如果n为非0,则一直执行下去
             return
         print('[CONSUMER] Consuming %s...' % n)
         r = '200 OK'
 
 def produce(c):
-    c.send(None)
+    c.send(None)        ##启动生成器
     n = 0
     while n < 5:
         n = n + 1
         print('[PRODUCER] Producing %s...' % n)
-        r = c.send(n)
+        r = c.send(n)       ## yield不仅可以返回结果，还可以接受参数。这里的n其实就是赋值给了上面consumer的n.
+                            ## 而consumer中的yield r的值则通过c.send()函数返回给了produce的r
         print('[PRODUCER] Consumer return:%s...' % r)
 
-c = consumer()
+## 执行开始
+c = consumer()      ## consumer是一个生成器，它传递给了produce做参数!
 produce(c)
+
 '''
 注意到consumer函数是一个generator，把一个consumer传入produce后：
 1、首先调用c.send(None)启动生成器；
