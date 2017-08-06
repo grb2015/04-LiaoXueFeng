@@ -12,8 +12,8 @@ pip install aiohttp
 '''
 
 
+##  aiohttp则是基于asyncio实现的HTTP框架,它更flask一样，解决如果要处理100个url怎么办的问题.
 # 注意aiohttp的初始化函数init()也是一个coroutine，loop.create_server()则利用asyncio创建TCP服务。
-'''
 import asyncio
 
 from aiohttp import web
@@ -29,9 +29,9 @@ async def hello(request):
 
 async def init(loop):
     app = web.Application(loop=loop)
-    app.router.add_route('GET', '/', index)
-    app.router.add_route('GET', '/hello/{name}', hello)
-    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)
+    app.router.add_route('GET', '/', index)     ## 指定 GET / 的http请求处理函数为index()
+    app.router.add_route('GET', '/hello/{name}', hello) ## 指定GET  /hello/name   的http请求处理函数为 hello ()
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)   ## 创建http服务器。使用的是aiohttp的功能
     print('Server started at http://127.0.0.1:8000...')
     return srv
 
@@ -39,4 +39,3 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(init(loop))
 loop.run_forever()
 
-'''
