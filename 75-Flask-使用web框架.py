@@ -54,7 +54,7 @@ def signin_form():
               <p><input name='password' type='password'></p>
               <p><button type='submit'>Sign In</button></p>'''
 
-## 处理第2种url    POST  /signin
+## 处理第3种url    POST  /signin
 @app.route('/signin',methods=['POST'])
 def signin():
     # 需要从request对象读取表单内容：
