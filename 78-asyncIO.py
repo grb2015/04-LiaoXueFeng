@@ -26,13 +26,14 @@ while True:
 '''
 asyncio是Python 3.4版本引入的标准库，直接内置了对异步IO的支持。
 
-asyncio的编程模型就是一个消息循环。
-我们从asyncio模块中直接获取一个EventLoop的引用，然后把需要执行的协程扔到EventLoop中执行，就实现了异步IO。
 '''
-# 用asyncio实现Hello world代码如下：
+##  asyncio的编程模型就是一个消息循环。
+##　我们从asyncio模块中直接获取一个EventLoop的引用，然后把需要执行的协程扔到EventLoop中执行，就实现了异步IO。
+
+
 import asyncio
 
-@asyncio.coroutine
+@asyncio.coroutine  ## @asyncio.coroutine把一个generator标记为coroutine类型,这里用的是装饰器
 def hello():
     print('hello world!')
     # 异步调用 asyncio.sleep()
@@ -40,10 +41,12 @@ def hello():
     print('Hello again!')
 
 if __name__!='__main__':
-    # 获取 EventLoop
-    loop = asyncio.get_event_loop()
-    # 执行 coroutine
+
+    loop = asyncio.get_event_loop() # 获取 EventLoop
+    
+    # 执行 coroutine(协程!)
     loop.run_until_complete(hello())
+
     loop.close()
 
 '''
@@ -80,19 +83,22 @@ if __name__ != '__main__':
 import asyncio
 
 @asyncio.coroutine
-def wget(host):
+def wget(host):         ## 怎么驱动这个执行的?
     print('wget %s...' % host)
-    connect = asyncio.open_connection(host,80)
-    reader, writer = yield from connect
+    connect = asyncio.open_connection(host,80)      ## 连接http(TCP连接请求)
+    reader, writer = yield from connect             ## yield from语法，允许一个generator生成器将其部分操作委派给另一个生成器
+                                                    ## 这里的reader,write我觉得还是外部send()进来的参数
     header = 'GET / HTTP/1.0\r\nHost:%s\r\n\r\n' % host
-    writer.write(header.encode('utf-8'))
+    writer.write(header.encode('utf-8'))            ## 发送http连接
     yield from writer.drain()
-    while True:
+    while True:                                 ### 在一个while(1)读取服务器的回应
         line = yield from reader.readline()
         if line == b'\r\n':
             break
         print('%s header > %s' % (host, line.decode('utf-8').rstrip()))
 
+    # Ignore the body, close the socket
+    writer.close()  ##renbin.guo added 之前的fork作者好像网了这句
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     tasks = [wget(host) for host in ['www.sina.com.cn','www.sohu.com','www.163.com']]
