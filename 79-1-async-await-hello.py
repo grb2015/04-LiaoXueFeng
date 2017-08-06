@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+## 用async 和 await代替yield from 
+
+## 只需要做两点改动:
+##1 . asyncio.coroutine替换为async；
+##2.  把yield from替换为await。
+
 import threading
 import asyncio
 
