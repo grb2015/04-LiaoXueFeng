@@ -47,20 +47,20 @@ from urllib import parse
 from aiohttp import web
 from apis import APIError
 
-# 要把一个函数映射为一个URL处理函数，我们先定义@get()：
+# 要把一个函数映射为一个URL处理函数，我们先定义@get()： 
 def get(path):
     '''
     Define decorator @get('/path)
     '''
     def decorator(func):
-        @functools.wraps(func)
+        @functools.wraps(func)          ## 使用了functools模块的wraps作装饰器(带参数)
         def wrapper(*args, **kw):
-            return func(*args, **kw)
+            return func(*args, **kw)    ## 最终执行的fun函数，是decorator中传入的参数
         wrapper.__method__ = 'GET'
         wrapper.__route__ = path
         return wrapper
     return decorator
-
+## 一个函数通过@get()的装饰就附带了URL信息
 
 # @post与@get定义类似。
 def post(path):
@@ -84,11 +84,12 @@ URL处理函数不一定是一个coroutine，因此我们用RequestHandler()来�
 
 RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
 
-RequestHandler目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求：
+RequestHandler目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，
+调用URL函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求：
 
 '''
 def has_request_arg(fn):
-    sig = inspect.signature(fn)
+    sig = inspect.signature(fn)     ## inspect是什么?
     params = sig.parameters
     found = False
     for name,param in params.items():
