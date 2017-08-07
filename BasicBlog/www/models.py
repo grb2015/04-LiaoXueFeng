@@ -15,9 +15,11 @@ from orm import Model, StringField, IntegerField,BooleanField,FloatField,TextFie
 def next_id():
     return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
+###　有了ORM，我们就可以把Web App需要的3个表用Model表示出来
+
 ## 我们先考虑如何定义一个User对象，然后把数据库表users和它关联起来
 class User(Model):  
-    __table__ = 'users'     ## 这里是什么用法 ?
+    __table__ = 'users'     ## 这里是什么用法 ?__table__是其内置成员变量？
 
     # 在编写ORM时，给一个Field增加一个default参数可以让ORM自己填入缺省值，非常方便。
     # 并且，缺省值可以作为函数对象传入，在调用save()时自动计算。
