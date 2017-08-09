@@ -30,7 +30,7 @@ def merge(defaults, override):
     for k,v in defaults.items():
         if k in override:
             if isinstance(v,dict):
-                r[k] = merge(v, override[k])
+                r[k] = merge(v, override[k])		## 递归调用
             else:
                 r[k] = override[k]
         else:
@@ -43,6 +43,8 @@ def toDict(d):
         D[k] = toDict(v) if isinstance(v,dict) else v
     return D
 
+
+### 这里是正式的执行语句，之前的都是定义上
 configs = config_default.configs
 
 try:
