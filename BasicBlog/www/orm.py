@@ -30,12 +30,13 @@ import aiomysql
 def log(sql, args=()):
     logging.info('SQL: %s' % sql)
 
-@asyncio.coroutine
-def create_pool(loop, ** kw):
+@asyncio.coroutine         ## 将生成器转为协程
+def create_pool(loop, ** kw):           
     log('crtate database connection pool...')
-    global __pool
+    global __pool           #　全局变量
     __pool = yield from aiomysql.create_pool(
-        host=kw.get('host','localhost'),
+        ## 创建的数据连接要用的信息，注意语句之间是','
+        host=kw.get('host','localhost'),            ##kw为传入的参数
         port=kw.get('port',3306),
         user=kw['user'],
         password=kw['password'],
@@ -44,7 +45,7 @@ def create_pool(loop, ** kw):
         autocommit=kw.get('autocommit',True),
         maxsize=kw.get('maxsize',10),
         minsize=kw.get('minsize',1),
-        loop=loop
+        loop=loop           ##loop为传入的参数
     )
 
 '''
@@ -64,10 +65,10 @@ def select(sql, args, size=None):
     log(sql, args)
     global __pool
     print('__pool',__pool)
-    with(yield from __pool) as conn:
-        cur = yield from conn.cursor(aiomysql.DictCursor)
-        yield from cur.execute(sql.replace('?','%s'), args or ())
-        if size:
+    with(yield from __pool) as conn:            ## 这里的conn表示从连接池里面返回的连接
+        cur = yield from conn.cursor(aiomysql.DictCursor)   ##调用conn的curse(游标?)方法
+        yield from cur.execute(sql.replace('?','%s'), args or ())       ## 这里用到了传入参数，使用了上面的
+        if size:                                                        ## yield的返回cur
             rs = yield from cur.fetchmany(size)
         else:
             rs = yield from cur.fetchall()
@@ -170,7 +171,7 @@ Model从dict继承，所以具备所有dict的功能，同时又实现了特殊�
 class Model(dict, metaclass=ModelMetaclass):
 
     def __init__(self, **kw):
-        super(Model, self).__init__(**kw)
+        super(Model, self).__init__(**kw)       ## super是什么 ?
 
     def __getattr__(self, key):
         try:
@@ -195,7 +196,7 @@ class Model(dict, metaclass=ModelMetaclass):
         return value
 
     # 我们往Model类添加class方法，就可以让所有子类调用class方法：
-    @classmethod
+    @classmethod        ## 这里classmethod也是未定义啊?  它作装饰器
     @asyncio.coroutine
     def findAll(cls, where=None, args=None, **kw):
         'find objects by where clause.'
@@ -267,7 +268,7 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = yield from execute(self.__delete__, args)
         if rows != 1:
             logging.warn('failed to remove by primary key:affected rows: %s' % rows)
-
+##　以及Field和各种Field子类：
 class Field(object):
 
     def __init__(self, name, column_type, primary_key, default):
