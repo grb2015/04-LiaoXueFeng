@@ -100,11 +100,11 @@ def wget(host):         ## 怎么驱动这个执行的?
     reader, writer = yield from connect             ## yield from语法，允许一个generator生成器将其部分操作委派给另一个生成器
                                                     ## 这里的reader,write我觉得还是外部send()进来的参数
     header = 'GET / HTTP/1.0\r\nHost:%s\r\n\r\n' % host
-    writer.write(header.encode('utf-8'))            ## 发送http连接
-    yield from writer.drain()
+    writer.write(header.encode('utf-8'))            ## 发送http连接，这里的writer是上报的tcp连接后返回的
+    yield from writer.drain()       ## 之类的drain是什么意思?
     while True:                                 ### 在一个while(1)读取服务器的回应
-        line = yield from reader.readline()
-        if line == b'\r\n':
+        line = yield from reader.readline()     ##  注意这里的reader是上面建立tcp连接后返回的
+        if line == b'\r\n':     ## 只读取头部
             break
         print('%s header > %s' % (host, line.decode('utf-8').rstrip()))
 
