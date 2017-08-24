@@ -75,6 +75,17 @@ if __name__ != '__main__':
     loop2.run_until_complete(asyncio.wait(tasks))
     loop2.close()
 
+
+#   结果：
+#   Hello world! (<_MainThread(MainThread, started 140735195337472)>)
+#   Hello world! (<_MainThread(MainThread, started 140735195337472)>)
+#   (暂停约1秒)
+#   Hello again! (<_MainThread(MainThread, started 140735195337472)>)
+#   Hello again! (<_MainThread(MainThread, started 140735195337472)>)
+#   解析：
+#       第一个hello2()执行到sleep()的时候，它并没有等待，而是进入主循环去执行EventLoop去执行第二个hell2()任务了，然后第二个hello2()进入到sleep()
+#   进行IO 操作。接着主消息中就没有要执行的任务了。他们就坐等各自的io返回。由于他们调用sleep的时间几乎一样的，所以io返回也几乎是一样的。所以
+#   打印Hello again几乎是同时的。
 # 由打印的当前线程名称可以看出，两个coroutine是由同一个线程并发执行的。
 # 如果把asyncio.sleep()换成真正的IO操作，则多个coroutine就可以由一个线程并发执行。
 
