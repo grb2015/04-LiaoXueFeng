@@ -72,6 +72,17 @@ if __name__ != '__main__':
     loop2.run_until_complete(asyncio.wait(tasks))
     loop2.close()
 
+
+#   结果：
+#   Hello world! (<_MainThread(MainThread, started 140735195337472)>)
+#   Hello world! (<_MainThread(MainThread, started 140735195337472)>)
+#   (暂停约1秒)
+#   Hello again! (<_MainThread(MainThread, started 140735195337472)>)
+#   Hello again! (<_MainThread(MainThread, started 140735195337472)>)
+#   解析：
+#       第一个hello2()执行到sleep()的时候，它并没有等待，而是进入主循环去执行EventLoop去执行第二个hell2()任务了，然后第二个hello2()进入到sleep()
+#   进行IO 操作。接着主消息中就没有要执行的任务了。他们就坐等各自的io返回。由于他们调用sleep的时间几乎一样的，所以io返回也几乎是一样的。所以
+#   打印Hello again几乎是同时的。
 # 由打印的当前线程名称可以看出，两个coroutine是由同一个线程并发执行的。
 # 如果把asyncio.sleep()换成真正的IO操作，则多个coroutine就可以由一个线程并发执行。
 
@@ -86,11 +97,11 @@ def wget(host):         ## 怎么驱动这个执行的?
     reader, writer = yield from connect             ## yield from语法，允许一个generator生成器将其部分操作委派给另一个生成器
                                                     ## 这里的reader,write我觉得还是外部send()进来的参数
     header = 'GET / HTTP/1.0\r\nHost:%s\r\n\r\n' % host
-    writer.write(header.encode('utf-8'))            ## 发送http连接
-    yield from writer.drain()
+    writer.write(header.encode('utf-8'))            ## 发送http连接，这里的writer是上报的tcp连接后返回的
+    yield from writer.drain()       ## 之类的drain是什么意思?
     while True:                                 ### 在一个while(1)读取服务器的回应
-        line = yield from reader.readline()
-        if line == b'\r\n':
+        line = yield from reader.readline()     ##  注意这里的reader是上面建立tcp连接后返回的
+        if line == b'\r\n':     ## 只读取头部
             break
         print('%s header > %s' % (host, line.decode('utf-8').rstrip()))
 
