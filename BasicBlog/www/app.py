@@ -138,10 +138,10 @@ def datetime_filter(t):
     dt = datetime.fromtimestamp(t)
     return u'%s年%s月%s日' % (dt.year,dt.month,dt.day)
 
-
+## day2 
 @asyncio.coroutine
 def init(loop):
-    yield from create_pool(loop=loop, **configs.db)         ## day2 没有这个
+    yield from create_pool(loop=loop, **configs.db)         ## day3 added create_pool 
     app = web.Application(loop=loop, middlewares=[          ## 与day2相比，加入了middlewares[]
         logger_factory,auth_factory, response_factory       
     ])
