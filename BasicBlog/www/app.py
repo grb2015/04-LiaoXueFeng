@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# 20151130-02
+# 20151130-02  
 # 由于我们的Web App建立在asyncio的基础上，因此用aiohttp写一个基本的app.py：
 import logging; logging.basicConfig(level=logging.INFO)
 import socket
@@ -141,13 +141,14 @@ def datetime_filter(t):
 
 @asyncio.coroutine
 def init(loop):
-    yield from create_pool(loop=loop, **configs.db)
-    app = web.Application(loop=loop, middlewares=[
-        logger_factory,auth_factory, response_factory
+    yield from create_pool(loop=loop, **configs.db)         ## day2 没有这个
+    app = web.Application(loop=loop, middlewares=[          ## 与day2相比，加入了middlewares[]
+        logger_factory,auth_factory, response_factory       
     ])
-    init_jinja2(app,filters=dict(datetime=datetime_filter))
-    add_routes(app, 'handlers')
-    add_static(app)
+    init_jinja2(app,filters=dict(datetime=datetime_filter)) ## day2没有这个
+    add_routes(app, 'handlers')     ## day2没有这个 
+                                    ## day2的app.router.add_route('GET', '/', index)被去掉了
+    add_static(app)     ## day2没有这个 
     # 获取本机机器名
     myname = socket.gethostname()
     # 获取本机 IP 地址
