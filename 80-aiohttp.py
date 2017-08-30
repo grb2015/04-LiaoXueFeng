@@ -23,7 +23,7 @@ async def index(request):
     return web.Response(body=b'<h1>Index</h1>')
 
 async def hello(request):
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.5)        ## 异步等待，也就是不阻塞，直接去干别的事情，等wait返回了，再执行下面的return 
     text = '<h1>hello, %s!</h1>' % request.match_info['name']
     return web.Response(body=text.encode('utf-8'))
 
@@ -31,11 +31,11 @@ async def init(loop):
     app = web.Application(loop=loop)
     app.router.add_route('GET', '/', index)     ## 指定 GET / 的http请求处理函数为index()
     app.router.add_route('GET', '/hello/{name}', hello) ## 指定GET  /hello/name   的http请求处理函数为 hello ()
-    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)   ## 创建http服务器。使用的是aiohttp的功能
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)   ## 创建http服务器。使用的是aiohttp的功能。 await 异步等待
     print('Server started at http://127.0.0.1:8000...')
     return srv
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(init(loop))
+loop.run_until_complete(init(loop))     ## 启动一个协程，因为它有async
 loop.run_forever()
 
