@@ -17,6 +17,8 @@ from apis import APIError
 from config import configs
 from handlers import cookie2user, COOKIE_NAME
 
+
+## day5  最后，在app.py中加入middleware、jinja2模板和自注册的支持：
 def init_jinja2(app, **kw):
     logging.info('init jinja2...')
     options = dict(

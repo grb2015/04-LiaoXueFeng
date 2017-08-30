@@ -48,6 +48,7 @@ from aiohttp import web
 from apis import APIError
 
 # 要把一个函数映射为一个URL处理函数，我们先定义@get()： 
+## day 5
 def get(path):
     '''
     Define decorator @get('/path)
@@ -63,6 +64,7 @@ def get(path):
 ## 一个函数通过@get()的装饰就附带了URL信息
 
 # @post与@get定义类似。
+## day5
 def post(path):
     '''
     Define decorator @post('/path)
@@ -77,19 +79,9 @@ def post(path):
     return decorator
 
 
-'''
-定义RequestHandler
-
-URL处理函数不一定是一个coroutine，因此我们用RequestHandler()来封装一个URL处理函数。
-
-RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
-
-RequestHandler目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，
-调用URL函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求：
-
-'''
+## day5  下面这四个函数都是拿给RequestHandler等类中进行调用的
 def has_request_arg(fn):
-    sig = inspect.signature(fn)     ## inspect是什么?
+    sig = inspect.signature(fn)     ## inspect是什么? 它是import的
     params = sig.parameters
     found = False
     for name,param in params.items():
@@ -127,7 +119,18 @@ def get_required_kw_args(fn):
         if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
             args.append(name)
     return tuple(args)
+'''
+定义RequestHandler
 
+URL处理函数不一定是一个coroutine，因此我们用RequestHandler()来封装一个URL处理函数。
+
+RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
+
+RequestHandler目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，
+调用URL函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求：
+
+'''
+## day5 
 class RequestHandler(object):
     def __init__(self, app, fn):
         self._app = app
@@ -198,6 +201,7 @@ def add_static(app):
     logging.info('add static %s => %s' % ('/static/', path))
 
 # add_route函数，用来注册URL处理函数：
+## day5
 def add_route(app, fn):
     method = getattr(fn, '__method__', None)
     path = getattr(fn, '__route__', None)
@@ -220,6 +224,7 @@ add_route(app, handles.create_comment)
 # 自动把handler模块的所有符合条件的函数注册了:
 add_routes(app, 'handlers')
 '''
+## day5
 def add_routes(app, module_name):
     n = module_name.rfind('.')
     if n == (-1):
