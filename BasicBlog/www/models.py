@@ -12,47 +12,51 @@ import time,uuid
 import asyncio
 from orm import Model, StringField, IntegerField,BooleanField,FloatField,TextField,create_pool
 
+##　day4
 def next_id():
     return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
 ###　有了ORM，我们就可以把Web App需要的3个表用Model表示出来
-
 ## 我们先考虑如何定义一个User对象，然后把数据库表users和它关联起来
-class User(Model):  
+## day 3  Model定义在orm中
+class User(Model):      
     __table__ = 'users'     ## 这里是什么用法 ?__table__是其内置成员变量？
 
-    # 在编写ORM时，给一个Field增加一个default参数可以让ORM自己填入缺省值，非常方便。
+    # 在编写ORM时，给一个Field增加一个default参数可以让ORM自己填入缺省值，非常方便。　## day4 
     # 并且，缺省值可以作为函数对象传入，在调用save()时自动计算。
-    id = StringField(primary_key=True, default=next_id(),ddl='varchar(50)')
-    email = StringField(ddl='varchar(50)')
-    passwd = StringField(ddl='varchar(50)')
-    admin = BooleanField()
-    name = StringField(ddl='varchar(50)')
-    image = StringField(ddl='varchar(500)')
-    created_at = FloatField(default=time.time)
+    #  StringField BooleanField FloatField代表数据类型，但是在哪里定义的呢?在orm中定义的！
+    # 同样 ddl 在哪里定义的呢? ddl只是一个名称，携带参数来初始化类
+    id = StringField(primary_key=True, default=next_id(),ddl='varchar(50)') ## day3只写了primary_key
+    email = StringField(ddl='varchar(50)')      ## day4 added 
+    passwd = StringField(ddl='varchar(50)')     ## day4 added 
+    admin = BooleanField()                      ## day4 added
+    name = StringField(ddl='varchar(50)')       ## day 3
+    image = StringField(ddl='varchar(500)')     ## day4 added
+    created_at = FloatField(default=time.time)  ## day4 added
 
+## day4 added   博客的数据库
 class Blog(Model):
     __table__ = 'blogs'
 
     id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
-    user_id = StringField(ddl='varchar(50)')
-    user_name = StringField(ddl='varchar(50)')
-    user_image = StringField(ddl='varchar(500)')
-    name = StringField(ddl='varchar(50)')
-    summary = StringField(ddl='varchar(200)')
-    content = TextField()
-    created_at = FloatField(default=time.time)
-
-class Comment(Model):
+    user_id = StringField(ddl='varchar(50)')        ##　用户id
+    user_name = StringField(ddl='varchar(50)')      ##  用户名
+    user_image = StringField(ddl='varchar(500)')    ##  用户照片
+    name = StringField(ddl='varchar(50)')           ##  名字 ? 和user_name有何区别?
+    summary = StringField(ddl='varchar(200)')       ##  摘要
+    content = TextField()                           ##  内容
+    created_at = FloatField(default=time.time)      ##  创建时间
+## day4 added
+class Comment(Model):       ## 用户评论的数据库
     __table__ = 'comments'
 
     id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
-    blog_id = StringField(ddl='varchar(50)')
-    user_id = StringField(ddl='varchar(50)')
-    user_name = StringField(ddl='varchar(50)')
-    user_image = StringField(ddl='varchar(500)')
-    content = TextField()
-    created_at = FloatField(default=time.time)        
+    blog_id = StringField(ddl='varchar(50)')        ## 博客名
+    user_id = StringField(ddl='varchar(50)')        ## 用户id
+    user_name = StringField(ddl='varchar(50)')      ## 用户名
+    user_image = StringField(ddl='varchar(500)')    ## 用户照片
+    content = TextField()                           ## 内容
+    created_at = FloatField(default=time.time)      ##　创建时间      
 
 
 def test(loop):

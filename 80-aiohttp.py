@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 aiohttp
 
@@ -20,12 +21,13 @@ from aiohttp import web
 
 async def index(request):
     await asyncio.sleep(0.5)
-    return web.Response(body=b'<h1>Index</h1>')
+    #return web.Response(body=b'<h1>Index</h1>')
+    return web.Response(body=b'<h1>index</h1>',content_type='text/html')  ## renbin.guo added 2017/08/25
 
 async def hello(request):
     await asyncio.sleep(0.5)        ## 异步等待，也就是不阻塞，直接去干别的事情，等wait返回了，再执行下面的return 
     text = '<h1>hello, %s!</h1>' % request.match_info['name']
-    return web.Response(body=text.encode('utf-8'))
+    return web.Response(body=text.encode('utf-8'),content_type='text/html')
 
 async def init(loop):
     app = web.Application(loop=loop)

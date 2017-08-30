@@ -30,6 +30,7 @@ import aiomysql
 def log(sql, args=()):
     logging.info('SQL: %s' % sql)
 
+## day3   create_pool app.py 的 init 中调用
 @asyncio.coroutine         ## 将生成器转为协程
 def create_pool(loop, ** kw):           
     log('crtate database connection pool...')
@@ -60,13 +61,14 @@ SQL语句的占位符是?，而MySQL的占位符是%s，select()函数在内部�
 
 如果传入size参数，就通过fetchmany()获取最多指定数量的记录，否则，通过fetchall()获取所有记录。
 '''
+## day3 
 @asyncio.coroutine
-def select(sql, args, size=None):
+def select(sql, args, size=None):       ## 根据参数args的不同，可执行不同的查询操作
     log(sql, args)
     global __pool
     print('__pool',__pool)
     with(yield from __pool) as conn:            ## 这里的conn表示从连接池里面返回的连接
-        cur = yield from conn.cursor(aiomysql.DictCursor)   ##调用conn的curse(游标?)方法
+        cur = yield from conn.cursor(aiomysql.DictCursor)   ##调用conn的curse(游标)方法,返回一个curse
         yield from cur.execute(sql.replace('?','%s'), args or ())       ## 这里用到了传入参数，使用了上面的
         if size:                                                        ## yield的返回cur
             rs = yield from cur.fetchmany(size)
@@ -83,8 +85,9 @@ Insert, Update, Delete
 
 execute()函数和select()函数所不同的是，cursor对象不返回结果集，而是通过rowcount返回结果数。
 '''
+##　day3   
 @asyncio.coroutine
-def execute(sql, args, autocommit=True):
+def execute(sql, args, autocommit=True): ## 根据参数args的不同, 可执行INSERT、UPDATE、DELETE操作
     log(sql)
     with(yield from __pool) as conn:
         if not autocommit:
@@ -117,6 +120,10 @@ ORM
 '''
 
 # 将具体的子类如User的映射信息读取出来
+
+## 这样，任何继承自Model的类（比如User），会自动通过ModelMetaclass扫描映射关系，
+#  并存储到自身的类属性如__table__、__mappings__中。
+# day 3 
 class ModelMetaclass(type):
     
     def __new__(cls, name, bases, attrs):
@@ -168,7 +175,9 @@ def create_args_string(num):
 '''
 Model从dict继承，所以具备所有dict的功能，同时又实现了特殊方法__getattr__()和__setattr__()，因此又可以像引用普通字段那样写：
 '''
-class Model(dict, metaclass=ModelMetaclass):
+
+## day3 
+class Model(dict, metaclass=ModelMetaclass):    ## metaclass 什么意思? Python中的"元类"，它等于ModelMetaclass
 
     def __init__(self, **kw):
         super(Model, self).__init__(**kw)       ## super是什么 ?
@@ -269,6 +278,7 @@ class Model(dict, metaclass=ModelMetaclass):
         if rows != 1:
             logging.warn('failed to remove by primary key:affected rows: %s' % rows)
 ##　以及Field和各种Field子类：
+##　day3
 class Field(object):
 
     def __init__(self, name, column_type, primary_key, default):
@@ -280,25 +290,32 @@ class Field(object):
     def __str__(self):
         return '<%s, %s:%s>' % (self.__class__.__name__, self.column_type, self.name)
         
-
+## day3 
 class StringField(Field):
     def __init__(self, name=None, primary_key=False, default=None, ddl='varchar(100)'):
         super().__init__(name,ddl,primary_key,default)
 
+# day3
 class BooleanField(Field):
 
     def __init__(self, name=None, default=False):
         super().__init__(name, 'boolean', False, default)
+
+# day3
 
 class IntegerField(Field):
 
     def __init__(self, name=None, primary_key=False, default=0):
         super().__init__(name, 'bigint', primary_key, default)
 
+# day3
+
 class FloatField(Field):
 
     def __init__(self, name=None, primary_key=False, default=0.0):
         super().__init__(name, 'real', primary_key, default)
+
+# day3
 
 class TextField(Field):
 
