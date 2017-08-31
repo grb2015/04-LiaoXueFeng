@@ -69,6 +69,8 @@ def cookie2user(cookie_str):
         logging.exception(e)
         return None
 
+### day7 现在，ORM框架、Web框架和配置都已就绪，我们可以开始编写一个最简单的MVC，把它们全部启动起来。
+### 通过Web框架的@get和ORM框架的Model支持，可以很容易地编写一个处理首页URL的函数：
 @get('/')
 def index(*,page='1'):
     num = yield from Blog.findNumber('count(id)')

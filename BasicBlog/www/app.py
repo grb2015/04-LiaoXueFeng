@@ -47,6 +47,7 @@ middleware是一种拦截器，一个URL在被某个函数处理前，可以经�
 middleware的用处就在于把通用的功能从每个URL处理函数中拿出来，集中放到一个地方。
 '''
 # 例如，一个记录URL日志的logger可以简单定义如下：
+## day 5
 @asyncio.coroutine
 def logger_factory(app, handler):
     @asyncio.coroutine
@@ -80,6 +81,7 @@ def auth_factory(app, handler):
 
 
 # 而response这个middleware把返回值转换为web.Response对象再返回，以保证满足aiohttp的要求：
+##  day5
 @asyncio.coroutine
 def response_factory(app,handler):
     @asyncio.coroutine
@@ -144,11 +146,11 @@ def datetime_filter(t):
 @asyncio.coroutine
 def init(loop):
     yield from create_pool(loop=loop, **configs.db)         ## day3 added create_pool 
-    app = web.Application(loop=loop, middlewares=[          ## 与day2相比，加入了middlewares[]
+    app = web.Application(loop=loop, middlewares=[          ## 与day2相比，加入了middlewares[]   ## day5 middlewares added 
         logger_factory,auth_factory, response_factory       
     ])
-    init_jinja2(app,filters=dict(datetime=datetime_filter)) ## day2没有这个
-    add_routes(app, 'handlers')     ## day2没有这个 
+    init_jinja2(app,filters=dict(datetime=datetime_filter)) ## day2没有这个 day5 added 
+    add_routes(app, 'handlers')     ## day2没有这个     day5  added 
                                     ## day2的app.router.add_route('GET', '/', index)被去掉了
     add_static(app)     ## day2没有这个 
     # 获取本机机器名

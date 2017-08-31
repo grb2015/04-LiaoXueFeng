@@ -24,7 +24,7 @@ class Dict(dict):
     def __setattr__(self, key ,value):
         self[key] = value
         
-
+## day 6
 def merge(defaults, override):
     r = {}
     for k,v in defaults.items():
@@ -44,7 +44,8 @@ def toDict(d):
     return D
 
 
-### 这里是正式的执行语句，之前的都是定义上
+### 这里是正式的执行语句，之前的都是定义函数
+## day 6 
 configs = config_default.configs
 
 try:
